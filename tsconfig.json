@@ -9,6 +9,7 @@
     "target": "ES6",
     "strict": true,
     "esModuleInterop": true,
+    "declaration": false,
     "lib": [
       "dom",
       "dom.iterable",
