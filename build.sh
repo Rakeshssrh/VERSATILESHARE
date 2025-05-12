@@ -1,14 +1,16 @@
 #!/bin/bash
+echo "Starting build process..."
+
+# Install dependencies
 echo "Installing dependencies..."
 npm install
 
-echo "Building application..."
-npm run render-build
+# Build client
+echo "Building client..."
+npm run build
 
-echo "Checking build output directory..."
-ls -la dist/
-
-echo "Checking TypeScript declarations..."
-find dist -name "*.d.ts" | grep -q . && echo "Declarations found" || echo "No declarations found"
+# Build server with correct TypeScript configuration
+echo "Building server..."
+npx tsc -p tsconfig.server.json
 
 echo "Build complete!"

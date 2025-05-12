@@ -1,19 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "target": "es6",
+    "module": "CommonJS",
+    "moduleResolution": "node",
     "esModuleInterop": true,
-    "outDir": "dist",
-    "strict": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "allowSyntheticDefaultImports": true,
+    "outDir": "dist",
+    "strict": false,
+    "skipLibCheck": true
   },
-  "include": ["src/server.ts", "src/lib/**/*.ts", "src/server/**/*.ts"],
+  "include": ["src/server.ts", "src/server/**/*", "src/lib/**/*"],
   "exclude": ["node_modules"]
 }
