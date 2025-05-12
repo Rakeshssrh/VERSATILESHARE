@@ -1,4 +1,3 @@
-
 import api from './api';
 import toast from 'react-hot-toast';
 
@@ -62,6 +61,7 @@ const authService = {
 
   forgotPassword: async (email: string) => {
     try {
+      // Use the server.ts API endpoint for forgot password
       const response = await api.post('/api/auth/forgot-password', { email });
       return response.data;
     } catch (error: any) {
@@ -72,9 +72,14 @@ const authService = {
     }
   },
 
-  resetPassword: async (token: string, newPassword: string) => {
+  resetPassword: async (email: string, otp: string, newPassword: string) => {
     try {
-      const response = await api.post(`/api/auth/reset-password/${token}`, { newPassword });
+      // Use the server.ts API endpoint for reset password
+      const response = await api.post('/api/auth/reset-password', { 
+        email,
+        otp,
+        newPassword 
+      });
       return response.data;
     } catch (error: any) {
       if (error.response && error.response.data?.error) {

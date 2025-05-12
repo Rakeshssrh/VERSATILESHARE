@@ -1,7 +1,8 @@
 
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import Router from '../main';
+// Fix the invalid import by using a named import from react-router-dom
+import { useNavigate } from 'react-router-dom';
 
 // Create axios instance
 const api = axios.create({

@@ -1,9 +1,37 @@
+
 import { useNavigate } from 'react-router-dom';
 import { Clock, Check, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import api from '../../services/api';
 
 export const AdminApprovalPending = ({ email }: { email: string }) => {
   const navigate = useNavigate();
+  const [pendingCount, setPendingCount] = useState<number>(0);
+  
+  useEffect(() => {
+    // Fetch count of admin users pending approval
+    const fetchPendingAdminCount = async () => {
+      try {
+        const response = await api.get('/api/admin/users');
+        
+        if (response.data && response.data.users) {
+          // Filter for admin users that are not approved
+          const pendingAdmins = response.data.users.filter(
+            (user: any) => user.role === 'admin' && user.isAdminVerified === false
+          );
+          
+          setPendingCount(pendingAdmins.length);
+        }
+      } catch (error) {
+        console.error('Error fetching pending admin count:', error);
+        // Default to 0 if there's an error
+        setPendingCount(0);
+      }
+    };
+    
+    fetchPendingAdminCount();
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -42,6 +70,14 @@ export const AdminApprovalPending = ({ email }: { email: string }) => {
               </div>
             </div>
           </div>
+          
+          {pendingCount > 0 && (
+            <div className="mt-4 text-center py-2 px-4 bg-yellow-50 rounded-md">
+              <p className="text-sm text-yellow-700">
+                Currently {pendingCount} admin account{pendingCount !== 1 ? 's' : ''} pending approval.
+              </p>
+            </div>
+          )}
         </div>
         
         <div className="pt-4">
