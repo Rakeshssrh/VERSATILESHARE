@@ -1,10 +1,11 @@
+//src\services\api.ts
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 // Determine the base URL based on environment
 const apiBaseUrl = window.location.hostname === 'localhost' 
   ? '/' 
-  : 'https://versatileshare.onrender.com/';
+  : 'https://versatileshare.onrender.com';
 
 // Create axios instance
 const api = axios.create({
