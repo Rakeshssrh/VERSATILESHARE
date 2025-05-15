@@ -1,4 +1,4 @@
-
+//src\contexts\AuthContext.tsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import api from '../services/api';
 import { API_ROUTES } from '../lib/api/routes';

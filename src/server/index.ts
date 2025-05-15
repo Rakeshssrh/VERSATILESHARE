@@ -100,7 +100,7 @@ app.get('/api/health', (_req, res) => {
 // Error handler
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

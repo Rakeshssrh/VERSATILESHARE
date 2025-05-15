@@ -21,7 +21,7 @@ export default defineConfig({
     allowedHosts: ['versatileshare.onrender.com'],
     proxy: {
       '/api': {
-        target: 'http://localhost:10000',
+        target: 'http://localhost:3000',
         changeOrigin: true,
       },
     },
