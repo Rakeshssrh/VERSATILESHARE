@@ -1,7 +1,5 @@
-
-//src\lib\db\models\Resource.ts
-import mongoose from 'mongoose';
-import { getAllCategoryIds, getStandardizedCategory } from '../../../utils/placementCategoryUtils';
+import mongoose, { Document, Schema } from 'mongoose';
+import { getAllCategoryIds, getStandardizedCategory } from '../../../utils/placementCategoryUtils.js';
 
 // Define a daily view schema for statistics
 const DailyViewSchema = new mongoose.Schema({
@@ -51,8 +49,14 @@ const StatsSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  dailyViews: [DailyViewSchema],
-  studentFeedback: [StudentFeedbackSchema]
+  dailyViews: {
+    type: [DailyViewSchema],
+    default: []
+  },
+  studentFeedback: {
+    type: [StudentFeedbackSchema],
+    default: []
+  }
 });
 
 // Define the Resource schema
@@ -110,7 +114,17 @@ const ResourceSchema = new mongoose.Schema({
   },
   stats: {
     type: StatsSchema,
-    default: () => ({})
+    default: function() {
+      return {
+        views: 0,
+        downloads: 0,
+        likes: 0,
+        comments: 0,
+        lastViewed: new Date(),
+        dailyViews: [],
+        studentFeedback: []
+      };
+    }
   },
   category: {
     type: String,
@@ -129,21 +143,24 @@ const ResourceSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
-  comments: [{
-    content: {
-      type: String,
-      required: true
-    },
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now
-    }
-  }],
+  comments: {
+    type: [{
+      content: {
+        type: String,
+        required: true
+      },
+      author: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now
+      }
+    }],
+    default: []
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -172,26 +189,6 @@ ResourceSchema.pre('save', function(next) {
   if (this.category === 'placement' && this.placementCategory) {
     this.placementCategory = getStandardizedCategory(this.placementCategory);
   }
-  
-  // Initialize stats if they don't exist
-  if (!this.stats) {
-    this.stats = {
-      views: 0,
-      downloads: 0,
-      likes: 0,
-      comments: 0,
-      lastViewed: new Date(),
-      dailyViews: [],
-      studentFeedback: []
-    };
-  }
-  
-  // Initialize arrays if they don't exist
-  if (!this.likedBy) this.likedBy = [];
-  if (!this.comments) this.comments = [];
-  if (!this.tags) this.tags = [];
-  if (!this.stats.dailyViews) this.stats.dailyViews = [];
-  if (!this.stats.studentFeedback) this.stats.studentFeedback = [];
   
   next();
 });
@@ -246,15 +243,63 @@ ResourceSchema.set('toJSON', {
   }
 });
 
+// Define Resource interface
+export interface IResource extends Document {
+  title: string;
+  description: string;
+  type: 'document' | 'video' | 'note' | 'link';
+  subject: string;
+  semester: number;
+  department?: string;
+  uploadedBy?: mongoose.Types.ObjectId;
+  fileUrl?: string;
+  fileName?: string;
+  fileSize?: number;
+  link?: string;
+  stats: {
+    views: number;
+    downloads: number;
+    likes: number;
+    comments: number;
+    lastViewed: Date;
+    dailyViews: Array<{
+      date: Date;
+      count: number;
+      _id?: mongoose.Types.ObjectId;
+    }>;
+    studentFeedback: Array<{
+      rating: number;
+      count: number;
+      _id?: mongoose.Types.ObjectId;
+    }>;
+  };
+  category?: 'study' | 'placement' | 'common';
+  placementCategory?: string;
+  tags?: string[];
+  likedBy?: mongoose.Types.ObjectId[];
+  comments?: Array<{
+    content: string;
+    author: mongoose.Types.ObjectId;
+    createdAt: Date;
+    _id?: mongoose.Types.ObjectId;
+  }>;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date | null;
+  id?: string;
+  softDelete(): Promise<IResource>;
+  restore(): Promise<IResource>;
+}
+
 // Safe export pattern for Next.js and Mongoose
-let Resource;
+let Resource: mongoose.Model<IResource>;
 
 try {
   // Check if the model already exists to prevent recompilation
-  Resource = mongoose.models.Resource || mongoose.model('Resource', ResourceSchema);
+  Resource = mongoose.models.Resource as mongoose.Model<IResource>;
 } catch (error) {
   // If model doesn't exist yet, create it
-  Resource = mongoose.model('Resource', ResourceSchema);
+  Resource = mongoose.model<IResource>('Resource', ResourceSchema);
 }
 
 export { Resource };

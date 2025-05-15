@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Upload, FileText } from 'lucide-react';
 import { UploadFormData, SubjectFolder } from '../../types/faculty';
@@ -7,7 +8,7 @@ interface ResourceUploadProps {
   onUpload: (data: UploadFormData) => Promise<void>;
   initialSubject?: string;
   initialSemester?: number;
-  initialCategory?: string;
+  initialCategory?: 'common' | 'study' | 'placement';
   isPlacementResource?: boolean;
   placementCategory?: string;
 }
@@ -36,7 +37,7 @@ export const ResourceUpload = ({
     semester: initialSemester !== undefined ? initialSemester : 1,
     file: undefined,
     link: '',
-    category: initialCategory,
+    category: initialCategory || 'study',
     placementCategory: placementCategory
   });
 
@@ -49,7 +50,7 @@ export const ResourceUpload = ({
     const allSubjectFolders = window.subjectFolders || [];
     
     const filteredSubjects = allSubjectFolders.filter(
-      folder => folder.semester === selectedSemester
+      (folder: SubjectFolder) => folder.semester === selectedSemester
     );
     
     setSemesterSubjects(filteredSubjects);
@@ -104,7 +105,7 @@ export const ResourceUpload = ({
         throw new Error('Title is required');
       }
 
-      if (!isPlacementResource && !formData.subject.trim()) {
+      if (!isPlacementResource && (!formData.subject || !formData.subject.trim())) {
         throw new Error('Subject is required');
       }
 
@@ -119,8 +120,9 @@ export const ResourceUpload = ({
       const dataToUpload = {
         ...formData,
         semester: isPlacementResource ? 0 : selectedSemester,
-        category: isPlacementResource ? 'placement' : formData.category,
-        placementCategory: isPlacementResource ? placementCategory : undefined
+        category: (isPlacementResource ? 'placement' : (formData.category || 'study')) as 'common' | 'study' | 'placement',
+        placementCategory: isPlacementResource ? placementCategory : undefined,
+        subject: formData.subject || ''  // Ensure subject is not undefined
       };
 
       console.log("Submitting data:", dataToUpload);
@@ -134,7 +136,7 @@ export const ResourceUpload = ({
         semester: isPlacementResource ? 0 : selectedSemester,
         file: undefined,
         link: '',
-        category: initialCategory,
+        category: initialCategory || 'study',
         placementCategory: placementCategory
       });
       setFileName(null);

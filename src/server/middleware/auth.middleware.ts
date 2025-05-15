@@ -1,6 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '../utils/auth';
-import { User } from '../../lib/db/models/User';
+import { verifyToken } from '../utils/auth.js';
+import { User } from '../../lib/db/models/User.js';
+
+// Extend the Express Request interface to include user
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+    }
+  }
+}
 
 export const authenticateJWT = async (req: Request, res: Response, next: NextFunction) => {
   try {

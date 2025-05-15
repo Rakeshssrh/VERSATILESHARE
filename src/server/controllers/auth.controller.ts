@@ -1,11 +1,10 @@
-
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import { User } from '../../lib/db/models/User';
-import { EligibleUSN } from '../../lib/db/models/EligibleUSN';
-import { generateToken } from '../utils/auth';
-import { sendVerificationEmail, sendWelcomeEmail } from '../../lib/email/sendEmail';
-import { generateOTP } from '../../lib/auth/otp';
+import { User } from '../../lib/db/models/User.js';
+import { EligibleUSN } from '../../lib/db/models/EligibleUSN.js';
+import { generateToken } from '../utils/auth.js';
+import { sendVerificationEmail } from '../../lib/email/sendEmail.js';
+import { generateOTP } from '../../lib/auth/otp.js';
 
 // Signup controller with proper validation and response
 export const signup = async (req: Request, res: Response) => {
@@ -171,7 +170,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
     await user.save();
 
     // Send welcome email
-    await sendWelcomeEmail(user.email, user.fullName);
+    // await sendWelcomeEmail(user.email, user.fullName);
 
     // Generate a new token with the role included
     const token = generateToken(user._id.toString(), user.role);

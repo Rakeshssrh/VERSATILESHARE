@@ -26,8 +26,8 @@ import { StarredPage as FacultyStarredPage } from './pages/faculty/StarredPage';
 import { TrashPage as FacultyTrashPage } from './pages/faculty/TrashPage';
 import { SettingsPage as FacultySettingsPage } from './pages/faculty/SettingsPage';
 
-import FacultyUploadPage from './pages/faculty/upload';
-import AdminUploadPage from './pages/admin/upload';
+import FacultyUploadPage from './pages/faculty/upload/index';
+import AdminUploadPage from './pages/admin/upload/index';
 import StudentCompetitiveProgramming from './pages/competitive/StudentCompetitiveProgramming';
 
 function App() {
@@ -313,11 +313,7 @@ function App() {
                     <Sidebar />
                     <div className="flex-1">
                       <Header />
-                      <AllResources 
-                        onViewAnalytics={(resourceId) => {
-                          window.location.href = `/admin/resources/${resourceId}/analytics`;
-                        }}
-                      />
+                      <AllResources />
                     </div>
                   </div>
                 </PrivateRoute>

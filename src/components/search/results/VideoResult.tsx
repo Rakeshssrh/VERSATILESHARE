@@ -1,4 +1,3 @@
-
 import React, { forwardRef } from 'react';
 import { ExternalLink, Download, Youtube, Calendar, Eye } from 'lucide-react';
 import { SearchResource } from '../../../types/faculty';
@@ -51,10 +50,10 @@ const VideoResult = forwardRef<HTMLDivElement, VideoResultProps>(({ result, save
             </span>
           )}
           
-          {result.publishDate && (
+          {result.publishedDate && (
             <span className="flex items-center">
               <Calendar className="h-3 w-3 mr-1" />
-              {new Date(result.publishDate).toLocaleDateString()}
+              {new Date(result.publishedDate).toLocaleDateString()}
             </span>
           )}
           

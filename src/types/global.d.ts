@@ -1,9 +1,10 @@
 
-import { FacultyResource } from './faculty';
+import { FacultyResource, SubjectFolder } from './faculty';
 
 declare global {
   interface Window {
-    sharedResources: FacultyResource[];
+    subjectFolders?: SubjectFolder[];
+    sharedResources?: FacultyResource[];
   }
 }
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { FacultyResource } from '../../types/faculty';
 import { FileText, Link as LinkIcon, MessageSquare, ThumbsUp, Video, Eye, Download, Bookmark } from 'lucide-react';

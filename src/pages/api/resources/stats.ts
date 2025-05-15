@@ -1,9 +1,9 @@
-
 import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB, { verifyDbConnection } from '../../../lib/db/connect';
 import { Resource } from '../../../lib/db/models/Resource';
 import { Activity } from '../../../lib/db/models/Activity';
 import mongoose from 'mongoose';
+import { mongoDocToPlain, convertDocArray, ensureStringIds } from '../../../lib/db/converters';
 
 // Define types to fix TypeScript errors
 interface DailyView {
@@ -22,7 +22,7 @@ interface ResourceStats {
 }
 
 interface ResourceType {
-  _id: string;
+  _id: string; // This should match the MongoDB ObjectId converted to string
   title: string;
   description?: string;
   type: 'document' | 'video' | 'note' | 'link';
@@ -79,9 +79,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log(`Total resources: ${totalResources}`);
       
       // Get resource type distribution
-      let resources: ResourceType[] = [];
+      let resources: any[] = [];
       try {
-        resources = await Resource.find({ deletedAt: null }).lean();
+        const rawResources = await Resource.find({ deletedAt: null }).lean();
+        resources = rawResources.map(resource => mongoDocToPlain(resource));
         console.log(`Found ${resources.length} resources`);
       } catch (findError) {
         console.error('Error finding resources:', findError);
@@ -93,7 +94,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       let totalDownloads = 0;
       
       try {
-        resources.forEach((resource: ResourceType) => {
+        resources.forEach((resource: any) => {
           totalViews += (resource.stats?.views || 0);
           totalLikes += (resource.stats?.likes || 0);
           totalDownloads += (resource.stats?.downloads || 0);
@@ -116,13 +117,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       
       // Get activities from the past week
-      let activities: ActivityType[] = [];
+      let activities: any[] = [];
       try {
-        activities = await Activity.find({
+        const rawActivities = await Activity.find({
           timestamp: { $gte: oneWeekAgo },
           type: { $in: ['view', 'download', 'upload'] }
         }).lean();
         
+        activities = rawActivities.map(activity => mongoDocToPlain(activity));
         console.log(`Found ${activities.length} activities in the past week`);
       } catch (activityError) {
         console.error('Error finding activities:', activityError);
@@ -150,7 +152,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
       // Count activities by day
       try {
-        activities.forEach((activity: ActivityType) => {
+        activities.forEach((activity: any) => {
           if (!activity.timestamp) {
             console.log('Activity missing timestamp:', activity);
             return;
@@ -179,7 +181,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      const todayActivities = activities.filter((activity: ActivityType) => {
+      const todayActivities = activities.filter((activity: any) => {
         if (!activity.timestamp) return false;
         const activityDate = new Date(activity.timestamp);
         activityDate.setHours(0, 0, 0, 0);
@@ -252,7 +254,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               likes: 0,
               comments: 0,
               lastViewed: new Date(),
-              dailyViews: []
+              dailyViews: [],
+              studentFeedback: []
             };
           }
           
@@ -307,7 +310,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               likes: 0,
               comments: 0,
               lastViewed: new Date(),
-              dailyViews: []
+              dailyViews: [],
+              studentFeedback: []
             };
           }
           resource.stats.downloads += 1;
@@ -336,13 +340,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               likes: 0,
               comments: 0,
               lastViewed: new Date(),
-              dailyViews: []
+              dailyViews: [],
+              studentFeedback: []
             };
           }
           resource.stats.likes += 1;
           
           // Add user to likedBy array if userId is provided
-          if (userId && !resource.likedBy.includes(userId)) {
+          if (userId && resource.likedBy && !resource.likedBy.includes(userId)) {
             resource.likedBy.push(userId);
             
             // Create activity record
@@ -368,7 +373,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               likes: 0,
               comments: 0,
               lastViewed: new Date(),
-              dailyViews: []
+              dailyViews: [],
+              studentFeedback: []
             };
           }
           resource.stats.comments += 1;
