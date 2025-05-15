@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 10000;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:8080', 'https://versatileshare.onrender.com'],
+  origin: ['http://localhost:5173', 'https://versatileshare.onrender.com'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true
 }));
