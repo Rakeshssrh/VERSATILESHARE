@@ -4,14 +4,18 @@ import { toast } from 'react-hot-toast';
 // Fix the invalid import by using a named import from react-router-dom
 import { useNavigate } from 'react-router-dom';
 
+// Determine the base URL based on environment
+const apiBaseUrl = window.location.hostname === 'localhost' 
+  ? '/' 
+  : 'https://versatileshare.onrender.com/';
+
 // Create axios instance
 const api = axios.create({
-  baseURL: '/', // Base URL for all API requests
+  baseURL: apiBaseUrl,
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
 // Request interceptor for API calls
 api.interceptors.request.use(
   (config) => {
