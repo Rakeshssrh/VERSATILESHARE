@@ -138,7 +138,7 @@ export const Sidebar = () => {
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div onClick={handleLogoClick} className="flex items-center space-x-3 cursor-pointer">
             <div className="relative flex items-center justify-center w-10 h-9 rounded-full text-white shadow-lg">
-              <span><img src="/uploads/cropped.png" alt="logo" className="h-13 w-18"/></span>
+              <span><img src="/src/assets/cropped.png" alt="logo" className="h-13 w-18"/></span>
             </div>
             <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">VersatileShare</h2>
           </div>
