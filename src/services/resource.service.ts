@@ -60,13 +60,47 @@ export const checkDatabaseConnection = async () => {
 };
 
 // Export a default object with all methods for easier imports
+
+
+// Removed getResources as it does not exist on resourceService
+/**
+ * Fetch resources with pagination, filtering, searching, and sorting.
+ * @param params Object containing page, limit, type, semester, search, sortOrder.
+ */
+export const getResources = async (params: {
+  page?: number;
+  limit?: number;
+  type?: string;
+  semester?: number;
+  search?: string;
+  sortOrder?: 'asc' | 'desc';
+}) => {
+  try {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page.toString());
+    if (params.limit) query.append('limit', params.limit.toString());
+    if (params.type) query.append('type', params.type);
+    if (params.semester) query.append('semester', params.semester.toString());
+    if (params.search) query.append('search', params.search);
+    if (params.sortOrder) query.append('sortOrder', params.sortOrder);
+
+    const endpoint = `/api/resources?${query.toString()}`;
+    const response = await api.get(endpoint);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching resources:', error);
+    toast.error('Failed to fetch resources');
+    throw error;
+  }
+};
+
 const resourceService = {
   fetchStudyMaterials,
   createResource,
   deleteResource,
-  checkDatabaseConnection
+  checkDatabaseConnection,
+  getResources
 };
-
 
 
 export default resourceService;
