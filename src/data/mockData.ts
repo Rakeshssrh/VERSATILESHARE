@@ -1,8 +1,8 @@
-import { User, Activity, Resource } from '../types/index';
+import { User, Activity, Resource } from '../types';
 
 export const currentUser: User = {
   _id: '1',
-  fullName: 'Varun Bharadwaj',
+  fullName: 'Rakesh',
   email: '',
   role:'student',
   semester: 7,

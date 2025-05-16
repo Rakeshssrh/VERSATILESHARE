@@ -1,3 +1,4 @@
+
 import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '../../../../lib/db/connect';
 import { Resource } from '../../../../lib/db/models/Resource';
@@ -74,7 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         nextDate.setDate(currentDate.getDate() + 1);
         
         // Count activities for this day
-        const dayCount = viewActivities.filter(activity => {
+        const dayCount = viewActivities.filter((activity: { timestamp: string | number | Date; }) => {
           const activityDate = new Date(activity.timestamp);
           return activityDate >= currentDate && activityDate < nextDate;
         }).length;
@@ -91,15 +92,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         (resource.stats?.dailyViews || []);
       
       // Generate department distribution from activities
-      const userDepartmentCounts = viewActivities.reduce((acc: Record<string, number>, activity: any) => {
-        // Access department through the populated user object if available
-        const department = activity.user && typeof activity.user === 'object' ? activity.user.department : 'Unknown';
-        acc[department] = (acc[department] || 0) + 1;
-        return acc;
-      }, {});
+      const departmentDistribution: Record<string, number> = {};
+      viewActivities.forEach((activity: { user: { department: any; }; }) => {
+        if (activity.user && activity.user.department) {
+          const dept = activity.user.department;
+          departmentDistribution[dept] = (departmentDistribution[dept] || 0) + 1;
+        }
+      });
       
       // Get the real counts based on activity records
-      const uniqueViewers = new Set(viewActivities.map(a => a.user?._id?.toString()).filter(Boolean)).size;
+      const uniqueViewers = new Set(viewActivities.map((a: { user: { _id: { toString: () => any; }; }; }) => a.user?._id?.toString()).filter(Boolean)).size;
       
       // Create an analytics object with the real data
       const analyticsData = {
@@ -110,7 +112,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         
         // User data from likedBy and like activities 
         likedBy: likeActivities.length > 0 ? 
-          likeActivities.map(activity => activity.user) : 
+          likeActivities.map((activity: { user: any; }) => activity.user) : 
           resource.likedBy || [],
         
         // Comment details
@@ -120,7 +122,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         dailyViews: dailyViews,
         
         // Department distribution from real data
-        departmentDistribution: Object.entries(userDepartmentCounts).map(([name, count]) => ({ 
+        departmentDistribution: Object.entries(departmentDistribution).map(([name, count]) => ({ 
           name, 
           count 
         })) || [],
@@ -129,7 +131,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         uniqueViewers: uniqueViewers || 0,
         
         // Add viewed timestamps
-        viewedBy: viewActivities.map(activity => ({
+        viewedBy: viewActivities.map((activity: { user: any; timestamp: any; }) => ({
           user: activity.user,
           timestamp: activity.timestamp
         }))

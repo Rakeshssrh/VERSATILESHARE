@@ -1,9 +1,9 @@
 import { Server } from 'socket.io';
-import { verifyToken } from '../auth/jwt.js';
+import { verifyToken } from '../auth/jwt';
 import mongoose from 'mongoose';
-import { Resource, IResource } from '../db/models/Resource.js';
-import { User } from '../db/models/User.js';
-import { Notification } from '../db/models/Notification.js';
+import { Resource } from '../db/models/Resource';
+import { User } from '../db/models/User';
+import { Notification } from '../db/models/Notification';
 
 let io: Server;
 
@@ -131,7 +131,7 @@ export const notifyResourceUpload = async (resourceId: string, facultyName: stri
     }
     
     // Get resource details
-    const resource = await Resource.findById(resourceId) as IResource | null;
+    const resource = await Resource.findById(resourceId);
     if (!resource) {
       console.error('Resource not found:', resourceId);
       return;
@@ -290,7 +290,7 @@ export const notifyFacultyOfInteraction = async (
     let resource, student;
     
     try {
-      resource = await Resource.findById(resourceId) as IResource | null;
+      resource = await Resource.findById(resourceId);
       student = await User.findById(studentId);
       
       if (!resource || !resource.uploadedBy || !student) {

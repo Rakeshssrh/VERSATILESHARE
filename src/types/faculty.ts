@@ -1,37 +1,37 @@
 
-// Add these properties to the SearchResource interface
-export interface SearchResource {
-  _id?: string;
-  id?: string;
+export interface UploadFormData {
   title: string;
-  description?: string;
+  description: string;
+  type: string;
+  subject: string;
+  semester: number;
+  file?: File | null;
   link?: string;
-  fileUrl?: string;
-  type?: string;
-  createdAt?: string | Date;
-  uploadDate?: string | Date;
   category?: string;
   placementCategory?: string;
-  stats?: {
-    views?: number;
-    downloads?: number;
-    likes?: number;
-    comments?: number;
-    lastViewed?: string | Date;
-  };
-  // Additional properties needed for InfoResult and other components
-  url?: string;
-  source?: string;
-  author?: string;
-  publishDate?: string;
-  score?: number;
-  thumbnailUrl?: string;
-  fileContent?: string;
-  // This was missing (publishedDate was being used instead of publishDate)
-  publishedDate?: string;
 }
 
-// Add FacultyResource interface
+export interface SubjectFolder {
+  _id?: string;
+  id?: string;
+  name?: string;
+  subjectName?: string;
+  lecturerName?: string;
+  semester?: number;
+  code?: string;
+  department?: string;
+}
+
+// Define the SubjectData interface for subject creation
+export interface SubjectData {
+  subjectName: string;
+  lecturerName: string;
+  semester: number;
+  name?: string;
+  department?: string;
+}
+
+// Update the FacultyResource interface to include all needed properties
 export interface FacultyResource {
   _id?: string;
   id?: string;
@@ -39,6 +39,7 @@ export interface FacultyResource {
   description?: string;
   fileUrl?: string;
   link?: string;
+
   type?: string;
   subject: string; // Make subject required
   semester?: number;
@@ -50,8 +51,8 @@ export interface FacultyResource {
   department?: string;  // Adding department property
   createdAt?: string | Date;
   uploadDate?: string | Date;
-  stats?: {
-    views?: number;
+  stats: {
+    views: number;
     downloads?: number;
     likes?: number;
     comments?: number;
@@ -61,40 +62,22 @@ export interface FacultyResource {
   comments?: any[];
   fileName?: string;
 }
+// Define SearchResource interface for search results
+export interface SearchResource {
+  score: any;
 
-// Add UploadFormData interface
-export interface UploadFormData {
+  id?: string;
   title: string;
   description?: string;
   type: string;
-  file?: File;
-  link?: string;
-  subject: string;  // Make subject required
-  semester?: string | number;
-  category?: 'common' | 'placement' | 'study';
+  subject?: string;
+  semester?: number;
+  fileUrl?: string;
+  category?: string;
   placementCategory?: string;
-}
-
-// Add SubjectFolder interface
-export interface SubjectFolder {
-  _id?: string;
-  id?: string;
-  name: string;
-  semester: number;
-  department?: string;
-  resources?: string[];
-  createdBy?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  subjectName?: string; // Added to fix errors
-  lecturerName?: string; // Added to fix errors
-}
-
-// Update SubjectData interface to match usage in code
-export interface SubjectData {
-  name?: string;  // Make name optional
-  semester: number;
-  department?: string;
-  subjectName?: string; // Added to fix errors
-  lecturerName?: string; // Added to fix errors
+  url?: string;
+  thumbnailUrl?: string;
+  publishedDate?: string;
+  source?: string;
+  author?: string;
 }

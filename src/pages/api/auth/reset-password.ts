@@ -1,6 +1,8 @@
+
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { User } from '../../../lib/db/models/User';
 import connectDB from '../../../lib/db/connect';
+import bcrypt from 'bcryptjs';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Set CORS headers
@@ -20,10 +22,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     await connectDB();
 
-    const { email, otp } = req.body;
+    const { email, code, newPassword } = req.body;
 
-    if (!email || !otp) {
-      return res.status(400).json({ error: 'Email and verification code are required' });
+    if (!email || !code || !newPassword) {
+      return res.status(400).json({ error: 'Email, verification code, and new password are required' });
+    }
+
+    // Validate the password strength
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
 
     // Find the user
@@ -33,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Check if the code is valid and not expired
-    if (!user.verificationCode || user.verificationCode !== otp) {
+    if (!user.verificationCode || user.verificationCode !== code) {
       return res.status(400).json({ error: 'Invalid verification code' });
     }
 
@@ -41,13 +48,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Verification code has expired' });
     }
 
-    return res.status(200).json({ 
-      success: true, 
-      message: 'OTP verified successfully',
-      email: email 
-    });
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the user's password
+    user.password = hashedPassword;
+    user.verificationCode = undefined;
+    user.verificationCodeExpiry = undefined;
+    await user.save();
+
+    return res.status(200).json({ success: true, message: 'Password has been successfully reset' });
   } catch (error) {
-    console.error('Verify OTP error:', error);
-    return res.status(500).json({ error: 'Failed to verify OTP' });
+    console.error('Reset password error:', error);
+    return res.status(500).json({ error: 'Failed to reset password' });
   }
 }

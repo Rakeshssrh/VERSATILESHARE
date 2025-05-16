@@ -1,3 +1,4 @@
+
 import { forwardRef } from 'react';
 import { ExternalLink, Download, FileText, Calendar, Link as LinkIcon } from 'lucide-react';
 import { SearchResource } from '../../../types/faculty';

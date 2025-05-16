@@ -9,7 +9,7 @@ import api from '../../../services/api';
 
 export const SignupForm = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  // Removed setError as it does not exist in AuthContextType
   const selectedRole = localStorage.getItem('selectedRole') as 'student' | 'faculty' | 'admin';
   
   const handleSubmit = async (formData: SignupFormData) => {
@@ -55,7 +55,7 @@ export const SignupForm = () => {
       }
     } catch (err: any) {
       console.error('Signup error:', err);
-      toast.error(err.message || 'An unexpected error occurred');
+      toast.error(err.message || 'Registration failed');
     }
   };
 
