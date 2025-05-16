@@ -1,5 +1,5 @@
 
-export * from './User';
-export * from './Resource';
-export * from './Activity';
-export * from './Notification';
+export * from './User.js';
+export * from './Resource.js';
+export * from './Activity.js';
+export * from './Notification.js';

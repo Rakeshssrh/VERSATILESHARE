@@ -1,7 +1,7 @@
 
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '../utils/auth';
-import { User } from '../../lib/db/models/User';
+import { verifyToken } from '../utils/auth.js';
+import { User } from '../../lib/db/models/User.js';
 import mongoose from 'mongoose';
 
 // Extend the Request type to include user
