@@ -4,13 +4,16 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev:frontend": "vite",
-    "dev:backend": "next dev",
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev": "vite",
+    "dev:server": "node --inspect dist/server.js",
     "build": "tsc && vite build",
-    "build:dev": "vite build --mode development",
+    "build:backend": "tsc -p tsconfig.server.json",
+    "render-build": "npm run build && npm run build:backend",
+    "start": "NODE_ENV=production node dist/server.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:dev": "vite build --mode development",
+    "dev:full": "npm run build:backend && concurrently \"npm run dev\" \"npm run dev:server\""
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.17.1",
